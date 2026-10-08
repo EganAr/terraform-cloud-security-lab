@@ -101,7 +101,7 @@ resource "aws_kms_key" "s3_key" {
   deletion_window_in_days = 7
   enable_key_rotation     = true # Menjawab standar keamanan (Fix CKV_AWS_7)
 
-  # # FIX CKV2_AWS_64: Mendefinisikan KMS Key Policy secara eksplisit
+  # # # FIX CKV2_AWS_64: Mendefinisikan KMS Key Policy secara eksplisit
   # policy = jsonencode({
   #   Version = "2012-10-17"
   #   Id      = "kms-key-policy-s3"
