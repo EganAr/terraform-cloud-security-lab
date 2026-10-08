@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Checkov & Generate SARIF
         uses: bridgecrewio/checkov-action@v12
@@ -37,7 +37,7 @@ jobs:
           output_file_path: console,results.sarif
 
       - name: Upload SARIF report to GitHub Security Tab
+        if: always()
         uses: github/codeql-action/upload-sarif@v3
-        if: always() # Tetap upload meskipun ada temuan failed
         with:
-          sarif_file: results.sarif    
+          sarif_file: results.sarif
