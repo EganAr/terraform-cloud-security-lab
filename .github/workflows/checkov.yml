@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - '**.tf'
+      - '.github/workflows/checkov.yml'
 
   pull_request:
     branches:
       - main
     paths:
       - '**.tf'
+      - '.github/workflows/checkov.yml'
 
   workflow_dispatch:
 
@@ -28,6 +30,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -diff
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Validate
+        run: terraform validate -no-color        
+
       - name: Run Checkov & Generate SARIF
         uses: bridgecrewio/checkov-action@v12
         with:
@@ -41,3 +55,4 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
+          category: checkov
