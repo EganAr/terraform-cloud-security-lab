@@ -11,9 +11,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - '**.tf'
-      - '.github/workflows/checkov.yml'
 
   workflow_dispatch:
 
