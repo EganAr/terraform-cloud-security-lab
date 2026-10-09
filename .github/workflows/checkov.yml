@@ -55,13 +55,13 @@ jobs:
         run: terraform fmt -check -diff
 
       - name: Terraform Init
-        run: terraform init -input=false
+        run: lstk terraform init
 
       - name: Terraform Validate
-        run: terraform validate -no-color
+        run: lstk terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -input=false -no-color          
+        run: lstk terraform plan         
 
       - name: Run Checkov & Generate SARIF
         uses: bridgecrewio/checkov-action@v12
