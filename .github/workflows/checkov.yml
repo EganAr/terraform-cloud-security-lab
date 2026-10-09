@@ -30,14 +30,48 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
 
+      - name: Install LocalStack CLI
+        run: npm install -g @localstack/lstk
+
+      - name: Start LocalStack
+        run: lstk start
+        env:
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
+
+      - name: Wait for LocalStack
+        run: |
+          for i in $(seq 1 30); do
+            if curl --silent --fail \
+              http://localhost:4566/_localstack/health; then
+              echo "LocalStack is responding"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "LocalStack failed to start"
+          exit 1  
+
       - name: Terraform Format Check
         run: terraform fmt -check -diff
 
       - name: Terraform Init
-        run: terraform init -input=false
+        run: lstk terraform init
 
       - name: Terraform Validate
-        run: terraform validate -no-color        
+        run: lstk terraform validate
+
+      - name: Terraform Plan
+        run: lstk terraform plan  
+
+      - name: Terraform Apply
+        run: lstk terraform apply -auto-approve
+
+      - name: Verify S3 Bucket in LocalStack
+        run: |
+          buckets="$(lstk aws s3api list-buckets \
+          --query 'Buckets[].Name' --output text)"
+          echo "S3 buckets: $buckets"
+          test -n "$buckets" && test "$buckets" != "None"           
 
       - name: Run Checkov & Generate SARIF
         uses: bridgecrewio/checkov-action@v12
