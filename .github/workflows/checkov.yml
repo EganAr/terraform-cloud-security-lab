@@ -61,7 +61,17 @@ jobs:
         run: lstk terraform validate
 
       - name: Terraform Plan
-        run: lstk terraform plan         
+        run: lstk terraform plan  
+
+      - name: Terraform Apply
+        run: lstk terraform apply -auto-approve
+
+      - name: Verify S3 Bucket in LocalStack
+        run: |
+          buckets="$(lstk aws s3api list-buckets \
+          --query 'Buckets[].Name' --output text)"
+          echo "S3 buckets: $buckets"
+          test -n "$buckets" && test "$buckets" != "None"           
 
       - name: Run Checkov & Generate SARIF
         uses: bridgecrewio/checkov-action@v12
